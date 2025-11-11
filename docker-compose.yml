@@ -2,35 +2,33 @@ version: "3.9"
 
 services:
   app:
-    build: .
-    container_name: laravel-finance
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: finance-app
+    restart: always
     ports:
       - "6728:6728"
     volumes:
       - .:/var/www/html
+    env_file:
+      - .env
     depends_on:
       - db
-    environment:
-      DB_CONNECTION=mysql
-      DB_HOST=db
-      DB_PORT=3306
-      DB_DATABASE=finance_db
-      DB_USERNAME=finance_user
-      DB_PASSWORD=finance_pass
 
   db:
-    image: mysql:8
+    image: mysql:8.0
     container_name: finance-db
     restart: always
     environment:
-      MYSQL_DATABASE: finance_db
-      MYSQL_USER: finance_user
-      MYSQL_PASSWORD: finance_pass
-      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: finance-excel
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    ports:
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
-    ports:
-      - "3308:3306"
 
 volumes:
   db_data:
