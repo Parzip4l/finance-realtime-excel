@@ -1,14 +1,16 @@
-# Gunakan PHP + Apache
 FROM php:8.2-apache
 
-# Install dependensi sistem & ekstensi PHP
+# Install sistem dependencies + PHP extensions
 RUN apt-get update && apt-get install -y \
     git \
     zip \
     unzip \
     libzip-dev \
-    libpq-dev \
-    && docker-php-ext-install pdo_mysql zip
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql zip gd
 
 # Install Composer
 COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
@@ -16,14 +18,14 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy seluruh project
+# Copy project
 COPY . .
 
-# Aktifkan rewrite Apache
+# Enable Apache rewrite
 RUN a2enmod rewrite
 
-# Expose port Laravel
+# Expose port
 EXPOSE 6728
 
-# Jalankan Apache
+# Start Apache
 CMD ["apache2-foreground"]
